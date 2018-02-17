@@ -16,7 +16,12 @@ DWORD WINAPI Initialize() {
 
 	freopen("CONOUT$", "w", stdout);
 	freopen("CONIN$", "r", stdin);
-  
+	std::cout << "Scanning... ";
+	if (Scan())
+		std::cout << "done!\n";
+	else
+		std::cout << "ERROR: Something went wrong while scanning.\n";
+
 	SetConsoleTextAttribute(hConsole, 14);
 	std::cout << "This open source project was made by Environment, Pudding Mug and Niftyhearts, Enjoy!";
 	SetConsoleTextAttribute(hConsole, 15);
