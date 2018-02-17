@@ -1,3 +1,6 @@
+#include "Functions.h"
+#include "Definitions.h"
+
 DWORD WINAPI Initialize() {
 
 
@@ -14,11 +17,18 @@ DWORD WINAPI Initialize() {
 	freopen("CONOUT$", "w", stdout);
 	freopen("CONIN$", "r", stdin);
   
-SetConsoleTextAttribute(hConsole, 14);
-std::cout << "This open source project was made by Environment, Pudding Mug and Niftyhearts, Enjoy!";
+	SetConsoleTextAttribute(hConsole, 14);
+	std::cout << "This open source project was made by Environment, Pudding Mug and Niftyhearts, Enjoy!";
 	SetConsoleTextAttribute(hConsole, 15);
-	std::cout << "Welcome to Zoof, Please enter your script!\r\n";
-  std::cout << "[SCRIPT]: ";
+	std::cout << "Welcome to Zoof, " << GetLocalPlayerName() << "Please enter your script!\r\n\n";
+	
+	for (;;) {
+		std::cout << "[SCRIPT]: ";
+		std::string input;
+		std::getline(std::cin, input);
+		Execute(input);
+	}
+}
 
 
 bool WINAPI DllMain(HMODULE InjectedExploitModule, DWORD ReasonForCall, LPVOID Reserved) {
@@ -26,8 +36,6 @@ bool WINAPI DllMain(HMODULE InjectedExploitModule, DWORD ReasonForCall, LPVOID R
 	UNREFERENCED_PARAMETER(Reserved);
 	if (ReasonForCall == DLL_PROCESS_ATTACH) {
 		CreateThread(0, NULL, (LPTHREAD_START_ROUTINE)&Initialize, NULL, NULL, NULL);
-	
-
 	};
 	return true;
 };
