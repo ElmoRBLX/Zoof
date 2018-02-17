@@ -102,3 +102,11 @@ void rlua_setfield(DWORD L, int idx, const char *k) {
 		arlua_setfield(L, idx, k);
 	}
 }
+
+std::string GetLocalPlayerName() {
+	rlua_getglobal(rL, "game");
+	rlua_getfield(rL, -1, "Players");
+	rlua_getfield(rL, -1, "LocalPlayer");
+	rlua_getfield(rL, -1, "Name");
+	return rlua_tolstring(rL, -1, NULL);
+}
