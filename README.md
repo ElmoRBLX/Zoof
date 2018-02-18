@@ -1,4 +1,5 @@
 # Zoof
-Made by NiftyHearts, Environment and Pudding Mug.
+Made by NiftyHearts.
 
 # Limited lua executor - open sourced!
+Just take it lol.
