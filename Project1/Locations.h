@@ -23,7 +23,7 @@ inline long offset(long Address) {
 #define loc_toboolean offset(0x721C70) //done
 #define loc_touserdata offset(0x722130) //done
 #define loc_next offset(0x720650) //done
-#define loc_getmetatable offset(0x730130) //done
+#define loc_getmetatable offset(0x71FD00) //done
 #define loc_rawgeti offset(0x712C90) //done
 #define loc_rawseti offset(0x721240) //done
 #define loc_ref offset(0x71B070) //done

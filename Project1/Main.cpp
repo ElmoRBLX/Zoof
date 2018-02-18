@@ -1,5 +1,7 @@
 #include "Functions.h"
 #include "Definitions.h"
+#include "Metamethods.h"
+#include "RFunctions.h"
 
 DWORD WINAPI Initialize() {
 
@@ -12,7 +14,7 @@ DWORD WINAPI Initialize() {
 
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 
-	SetConsoleTitle("Zoof - Open Source Parser Project");
+	SetConsoleTitleA("Zoof - Open Source Parser Project");
 
 	freopen("CONOUT$", "w", stdout);
 	freopen("CONIN$", "r", stdin);
@@ -21,11 +23,15 @@ DWORD WINAPI Initialize() {
 		std::cout << "done!\n";
 	else
 		std::cout << "ERROR: Something went wrong while scanning.\n";
-
+	std::cout << "Creating environment... ";
+	luaL_openlibs(L);
+	createmetas();
+	rlua_register_rf(L);
+	std::cout << "done!\n";
 	SetConsoleTextAttribute(hConsole, 14);
-	std::cout << "This open source project was made by Environment, Pudding Mug and Niftyhearts, Enjoy!";
+	std::cout << "This open source project was made by Niftyhearts, Enjoy!\n";
 	SetConsoleTextAttribute(hConsole, 15);
-	std::cout << "Welcome to Zoof, " << GetLocalPlayerName() << "Please enter your script!\r\n\n";
+	std::cout << "Welcome to Zoof, " << GetLocalPlayerName() << "! Please enter your script!\r\n\n";
 	
 	for (;;) {
 		std::cout << "[SCRIPT]: ";

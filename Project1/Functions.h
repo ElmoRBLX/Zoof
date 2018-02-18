@@ -98,6 +98,7 @@ void rlua_setfield(DWORD L, int idx, const char *k) {
 		rlua_pop(L, 3);
 	}
 	else {
+		std::cout << "0\n";
 		rlua_pop(L, 1);
 		arlua_setfield(L, idx, k);
 	}
@@ -109,4 +110,66 @@ std::string GetLocalPlayerName() {
 	rlua_getfield(rL, -1, "LocalPlayer");
 	rlua_getfield(rL, -1, "Name");
 	return rlua_tolstring(rL, -1, NULL);
+}
+
+void Execute(std::string s) {
+	if (luaL_dostring(L, s.c_str())) {
+		std::cout << "ERROR: " << lua_tostring(L, -1) << std::endl;
+	}
+}
+
+void wrap(DWORD rL, lua_State *L, int idx) {
+	switch (rlua_type(rL, idx)) {
+	case RLUA_TSTRING:
+		lua_pushstring(L, rlua_tolstring(rL, idx, NULL));
+		break;
+	case RLUA_TNUMBER:
+		lua_pushnumber(L, rlua_tonumber(rL, idx));
+		break;
+	case RLUA_TBOOLEAN:
+		lua_pushboolean(L, rlua_toboolean(rL, idx));
+		break;
+	case RLUA_TNIL:
+		lua_pushnil(L);
+		break;
+	case RLUA_TNONE:
+		lua_pushnil(L);
+		break;
+	case RLUA_TTABLE:
+		lua_newtable(L);
+		rlua_pushnil(rL);
+		DWORD start = 0;
+		DWORD end = 0;
+		start = rlua_gettop(rL);
+		while (rlua_next(rL, -2) != 0) {
+			rlua_pushvalue(rL, -2);
+			const char *name = rlua_tolstring(rL, -1, NULL);
+			rlua_pushvalue(rL, -2);
+			wrap(rL, L, -1);
+			lua_setfield(L, -2, name);
+			DWORD end = rlua_gettop(rL);
+			rlua_pop(rL, end - start);
+		}
+		break;
+	}
+}
+
+void unwrap(lua_State *L, DWORD rL, int idx) {
+	switch (lua_type(L, idx)) {
+	case LUA_TNIL:
+		rlua_pushnil(rL);
+		break;
+	case LUA_TNONE:
+		rlua_pushnil(rL);
+		break;
+	case LUA_TBOOLEAN:
+		rlua_pushboolean(rL, lua_toboolean(L, idx));
+		break;
+	case LUA_TNUMBER:
+		rlua_pushnumber(rL, lua_tonumber(L, idx));
+		break;
+	case LUA_TSTRING:
+		rlua_pushstring(rL, lua_tostring(L, idx));
+		break;
+	}
 }
