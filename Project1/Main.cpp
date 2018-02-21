@@ -3,21 +3,22 @@
 #include "Metamethods.h"
 #include "RFunctions.h"
 
-DWORD WINAPI Initialize() {
-
-
-
-	DWORD NullFC;
-	VirtualProtect((PVOID)&FreeConsole, 1, PAGE_EXECUTE_READWRITE, &NullFC);
-	*(BYTE*)(&FreeConsole) = 0xC3;
+void Console(const char* string) {
+	DWORD consoleOldProtect;
+	VirtualProtect(FreeConsole, 1, PAGE_EXECUTE_READWRITE, &(DWORD)consoleOldProtect);
+	*(UINT*)FreeConsole = 0xC2;
 	AllocConsole();
-
-	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-
-	SetConsoleTitleA("Zoof - Open Source Parser Project");
-
 	freopen("CONOUT$", "w", stdout);
 	freopen("CONIN$", "r", stdin);
+	DWORD cons = (WS_CAPTION | DS_MODALFRAME | WS_MINIMIZEBOX | WS_SYSMENU);
+	SetWindowLong(GetConsoleWindow(), GWL_STYLE, cons);
+	SetWindowPos(GetConsoleWindow(), HWND_TOPMOST, 0, 0, 0, 0, SWP_DRAWFRAME | SWP_NOSIZE | SWP_NOMOVE | SWP_SHOWWINDOW);
+	SetConsoleTitleA(string);
+	HANDLE HA = GetStdHandle(STD_OUTPUT_HANDLE);
+}
+
+int main() {
+	Console("Zoof | Open source project by NiftyHearts");
 	std::cout << "Scanning... ";
 	if (Scan())
 		std::cout << "done!\n";
@@ -39,14 +40,20 @@ DWORD WINAPI Initialize() {
 		std::getline(std::cin, input);
 		Execute(input);
 	}
+	return 0;
 }
 
-
-bool WINAPI DllMain(HMODULE InjectedExploitModule, DWORD ReasonForCall, LPVOID Reserved) {
-	UNREFERENCED_PARAMETER(InjectedExploitModule);
-	UNREFERENCED_PARAMETER(Reserved);
-	if (ReasonForCall == DLL_PROCESS_ATTACH) {
-		CreateThread(0, NULL, (LPTHREAD_START_ROUTINE)&Initialize, NULL, NULL, NULL);
-	};
+BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
+{
+	switch (ul_reason_for_call)
+	{
+	case DLL_PROCESS_ATTACH: {
+		DisableThreadLibraryCalls(hModule);
+		CreateThread(NULL, NULL, (LPTHREAD_START_ROUTINE)init,NULL, NULL, NULL);
+		break;
+	}
+	case DLL_PROCESS_DETACH: break;
+	}
 	return true;
-};
+}
+
